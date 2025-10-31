@@ -1,3 +1,4 @@
+import 'package:demo_clean_archtechture_with_provider/features/posts/presentation/pages/post_page.dart';
 import 'package:demo_clean_archtechture_with_provider/features/posts/presentation/providers/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return PostPage();
   }
 }
 
