@@ -1,4 +1,3 @@
-
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:demo_clean_archtechture_with_provider/core/connection/network_connection.dart';
 import 'package:demo_clean_archtechture_with_provider/core/errors/failure.dart';
@@ -29,7 +28,7 @@ class PostProvider extends ChangeNotifier{
         postLocalDataSource: PostLocalDataSourceImpl(sharedPreferences: await SharedPreferences.getInstance())
      );
 
-    final failureOrPost = await GetPostUseCase(postRepositoryImpl).call(params: PostParams(id: '1'));
+    final failureOrPost = await GetAPostUseCase(postRepositoryImpl).call(params: PostParams(id: '1'));
 
     failureOrPost.fold(
         (newFailure){

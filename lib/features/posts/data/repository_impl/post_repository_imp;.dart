@@ -18,12 +18,12 @@ class PostRepositoryImpl implements PostRepository{
   PostRepositoryImpl({required this.networkConnection, required this.postRemoteDataSource, required this.postLocalDataSource});
 
   @override
-  Future<Either<Failure, PostEntities>> getPost({required PostParams params}) async{
+  Future<Either<Failure, PostEntities>> getAPost({required PostParams params}) async{
 
     if(await networkConnection.isNetworkConnected!){
       try{
-        final remotePost = await postRemoteDataSource.getPost(params:
-        PostParams(id: '1')
+        final remotePost = await postRemoteDataSource.getAPost(params:
+        params
         );
 
         return Right(remotePost);
@@ -34,13 +34,36 @@ class PostRepositoryImpl implements PostRepository{
     }
     else{
       try {
-        final localPost = await postLocalDataSource.getLastPost();
+        final localPost = await postLocalDataSource.getAPost(params);
         return Right(localPost);
       } on CacheException{
         return Left(CacheFailure(errorMessage: 'local is empty'));
       }
     }
+  }
 
+  @override
+  Future<Either<Failure, List<PostEntities>>> getAllPost({required PostParams params}) async{
+    if(await networkConnection.isNetworkConnected!){
+
+      try{
+        final networkAllPost = await postRemoteDataSource.getAllPost(params: params);
+
+        return Right(networkAllPost);
+      } on ServerException {
+        return Left(ServerFailure(errorMessage: 'Server failed'));
+      }
+
+    }
+    else{
+      try{
+        final localAllPost = await postLocalDataSource.getAllPost();
+
+        return Right(localAllPost);
+      } on CacheException{
+        return Left(CacheFailure(errorMessage: 'Server failed'));
+      }
+    }
   }
 
 }

@@ -5,7 +5,8 @@ import 'package:demo_clean_archtechture_with_provider/features/posts/data/models
 import 'package:dio/dio.dart';
 
 abstract class PostRemoteDataSource {
-  Future<PostModel> getPost({required PostParams params});
+  Future<PostModel> getAPost({required PostParams params});
+  Future<List<PostModel>> getAllPost({required PostParams params});
 }
 
 class PostRemoteDataSourceImpl implements PostRemoteDataSource{
@@ -14,9 +15,9 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource{
   PostRemoteDataSourceImpl({required this.dio});
 
   @override
-  Future<PostModel> getPost({required PostParams params}) async {
+  Future<PostModel> getAPost({required PostParams params}) async {
     final response = await dio.get(
-        kPostUrl,
+        kPostUrl+params.id,
       queryParameters: {
           'api_key' : "",
       }
@@ -26,6 +27,23 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource{
       return PostModel.fromJson(response.data);
     }
     else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<PostModel>> getAllPost({required PostParams params}) async {
+    final response = await dio.get(
+      kPostUrl, // we don't need `+params.id` for all posts
+      queryParameters: {
+        'api_key': '',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      return data.map((json) => PostModel.fromJson(json)).toList();
+    } else {
       throw ServerException();
     }
   }

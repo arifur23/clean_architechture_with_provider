@@ -7,5 +7,7 @@ import 'package:demo_clean_archtechture_with_provider/features/posts/domain/enti
 
 abstract class PostRepository{
 
-  Future<Either<Failure, PostEntities>>  getPost({required PostParams params});
+  Future<Either<Failure, PostEntities>>  getAPost({required PostParams params});
+
+  Future<Either<Failure, List<PostEntities>>> getAllPost({required PostParams params});
 }
