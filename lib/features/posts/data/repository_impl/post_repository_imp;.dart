@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:demo_clean_archtechture_with_provider/core/connection/network_connection.dart';
 import 'package:demo_clean_archtechture_with_provider/core/errors/exceptions.dart';
@@ -10,60 +8,75 @@ import 'package:demo_clean_archtechture_with_provider/features/posts/data/data_s
 import 'package:demo_clean_archtechture_with_provider/features/posts/domain/entities/post.dart';
 import 'package:demo_clean_archtechture_with_provider/features/posts/domain/repositories/post_repositories.dart';
 
-class PostRepositoryImpl implements PostRepository{
+import '../models/post_model.dart';
+
+class PostRepositoryImpl implements PostRepository {
   final NetworkConnection networkConnection;
   final PostRemoteDataSource postRemoteDataSource;
   final PostLocalDataSource postLocalDataSource;
 
-  PostRepositoryImpl({required this.networkConnection, required this.postRemoteDataSource, required this.postLocalDataSource});
+  PostRepositoryImpl({
+    required this.networkConnection,
+    required this.postRemoteDataSource,
+    required this.postLocalDataSource,
+  });
 
+  // -------------------------------
+  // GET SINGLE POST
+  // -------------------------------
   @override
-  Future<Either<Failure, PostEntities>> getAPost({required PostParams params}) async{
+  Future<Either<Failure, PostEntities>> getAPost({required PostParams params}) async {
+    if (await networkConnection.isNetworkConnected!) {
+      try {
+        final remotePost = await postRemoteDataSource.getAPost(params: params);
 
-    if(await networkConnection.isNetworkConnected!){
-      try{
-        final remotePost = await postRemoteDataSource.getAPost(params:
-        params
-        );
+        // Cache the post locally
+        await postLocalDataSource.cachePost(remotePost as dynamic);
 
         return Right(remotePost);
-      } on ServerException{
-        return Left(ServerFailure(errorMessage: 'Data pulling failed'));
+      } on ServerException {
+        return Left(ServerFailure(errorMessage: 'Server failed to fetch post'));
       }
-
-    }
-    else{
+    } else {
       try {
         final localPost = await postLocalDataSource.getAPost(params);
         return Right(localPost);
-      } on CacheException{
-        return Left(CacheFailure(errorMessage: 'local is empty'));
+      } on CacheException {
+        return Left(CacheFailure(errorMessage: 'No cached post found'));
       }
     }
   }
 
+  // -------------------------------
+  // GET ALL POSTS
+  // -------------------------------
   @override
-  Future<Either<Failure, List<PostEntities>>> getAllPost({required PostParams params}) async{
-    if(await networkConnection.isNetworkConnected!){
+  Future<Either<Failure, List<PostEntities>>> getAllPost({required PostParams params}) async {
+    if (await networkConnection.isNetworkConnected!) {
+      try {
+        final networkAllPosts = await postRemoteDataSource.getAllPost(params: params); // List<PostEntities>
 
-      try{
-        final networkAllPost = await postRemoteDataSource.getAllPost(params: params);
+        // Convert entities to PostModel for caching
 
-        return Right(networkAllPost);
+
+        // Cache all posts locally
+        await postLocalDataSource.cacheAllPosts(networkAllPosts);
+
+        return Right(networkAllPosts);
       } on ServerException {
-        return Left(ServerFailure(errorMessage: 'Server failed'));
+        return Left(ServerFailure(errorMessage: 'Server failed to fetch posts'));
       }
-
     }
-    else{
-      try{
-        final localAllPost = await postLocalDataSource.getAllPost();
 
-        return Right(localAllPost);
-      } on CacheException{
-        return Left(CacheFailure(errorMessage: 'Server failed'));
+
+
+    else {
+      try {
+        final localAllPosts = await postLocalDataSource.getAllPost();
+        return Right(localAllPosts);
+      } on CacheException {
+        return Left(CacheFailure(errorMessage: 'No cached posts found'));
       }
     }
   }
-
 }

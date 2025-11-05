@@ -10,12 +10,14 @@ abstract class PostRemoteDataSource {
 }
 
 class PostRemoteDataSourceImpl implements PostRemoteDataSource{
+
   final Dio dio;
 
   PostRemoteDataSourceImpl({required this.dio});
 
   @override
   Future<PostModel> getAPost({required PostParams params}) async {
+    print(params.id);
     final response = await dio.get(
         kPostUrl+params.id,
       queryParameters: {
@@ -42,11 +44,11 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource{
 
     if (response.statusCode == 200) {
       final List<dynamic> data = response.data;
+      print(data.toString());
       return data.map((json) => PostModel.fromJson(json)).toList();
+
     } else {
       throw ServerException();
     }
   }
-
-
 }

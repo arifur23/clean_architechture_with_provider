@@ -10,7 +10,8 @@ class GetAPostUseCase {
   GetAPostUseCase(this.postRepository);
 
   Future<Either<Failure, PostEntities>> call({required PostParams params}) async {
-    return await postRepository.getAPost(params: params);
-  }
 
+    return await postRepository.getAPost(params: params);
+
+  }
 }

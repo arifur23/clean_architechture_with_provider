@@ -42,8 +42,7 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    Provider.of<PostProvider>(context, listen: false).eitherFailureOrPost(value: '1');
+    Provider.of<PostProvider>(context, listen: false).getAllPosts();
   }
 
   @override

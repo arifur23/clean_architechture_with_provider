@@ -1,6 +1,7 @@
-
- import 'package:demo_clean_archtechture_with_provider/features/posts/presentation/widgets/post_widget.dart';
+import 'package:demo_clean_archtechture_with_provider/features/posts/presentation/widgets/post_widget.dart';
 import 'package:flutter/material.dart';
+import '../widgets/all_post_widget.dart';
+
 
 class PostPage extends StatelessWidget {
    const PostPage({super.key});
@@ -11,8 +12,10 @@ class PostPage extends StatelessWidget {
      return Scaffold(
        body: Container(
          child: Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           crossAxisAlignment: CrossAxisAlignment.center,
            children: [
-             PostWidget()
+             AllPostsWidget()
            ],
          ),
        )
