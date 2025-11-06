@@ -1,4 +1,4 @@
-class NoParams{}
+
 
 class PostParams {
 

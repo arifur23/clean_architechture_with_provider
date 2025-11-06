@@ -56,9 +56,6 @@ class PostRepositoryImpl implements PostRepository {
       try {
         final networkAllPosts = await postRemoteDataSource.getAllPost(params: params); // List<PostEntities>
 
-        // Convert entities to PostModel for caching
-
-
         // Cache all posts locally
         await postLocalDataSource.cacheAllPosts(networkAllPosts);
 
@@ -67,8 +64,6 @@ class PostRepositoryImpl implements PostRepository {
         return Left(ServerFailure(errorMessage: 'Server failed to fetch posts'));
       }
     }
-
-
 
     else {
       try {
@@ -79,4 +74,5 @@ class PostRepositoryImpl implements PostRepository {
       }
     }
   }
+
 }

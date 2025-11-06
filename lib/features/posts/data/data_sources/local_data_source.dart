@@ -26,20 +26,17 @@ class PostLocalDataSourceImpl implements PostLocalDataSource {
 
   static String cacheKey = kPost;
 
-  // --------------------------------------------------------
-  // 🧩 Cache all posts
-  // --------------------------------------------------------
   @override
   Future<void> cacheAllPosts(List<PostModel> posts) async {
     if (posts.isEmpty) throw CacheException();
 
     final jsonString = jsonEncode(posts.map((p) => p.toJson()).toList());
+
+    await sharedPreferences.setString(cacheKey, '');
+
     await sharedPreferences.setString(cacheKey, jsonString);
   }
 
-  // --------------------------------------------------------
-  // 🧩 Cache a single post (append or update)
-  // --------------------------------------------------------
   @override
   Future<void> cachePost(PostModel post) async {
     final jsonString = sharedPreferences.getString(cacheKey);
@@ -66,9 +63,8 @@ class PostLocalDataSourceImpl implements PostLocalDataSource {
     );
   }
 
-  // --------------------------------------------------------
-  // 🧩 Get a single cached post
-  // --------------------------------------------------------
+
+
   @override
   Future<PostModel> getAPost(PostParams params) async {
     final jsonString = sharedPreferences.getString(cacheKey);
@@ -87,9 +83,7 @@ class PostLocalDataSourceImpl implements PostLocalDataSource {
     }
   }
 
-  // --------------------------------------------------------
-  // 🧩 Get all cached posts
-  // --------------------------------------------------------
+
   @override
   Future<List<PostModel>> getAllPost() async {
     final jsonString = sharedPreferences.getString(cacheKey);
